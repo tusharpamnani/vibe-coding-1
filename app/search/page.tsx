@@ -4,10 +4,11 @@ import { StickySearchBar } from '@/components/search/sticky-search-bar';
 export default function SearchPage({
   searchParams
 }: {
-  searchParams?: { q?: string; type?: string }
+  searchParams?: { q?: string; type?: string; difficulty?: string }
 }) {
   const query = searchParams?.q || '';
-  const type = searchParams?.type || '';
+  const type = searchParams?.type || 'all';
+  const difficulty = searchParams?.difficulty || 'all';
   
   return (
     <div className="min-h-screen pb-20">
@@ -27,7 +28,7 @@ export default function SearchPage({
           </div>
         )}
         
-        <SearchResults query={query} selectedType={type} />
+        <SearchResults query={query} selectedType={type} selectedDifficulty={difficulty} />
       </div>
       
       <StickySearchBar initialQuery={query} />

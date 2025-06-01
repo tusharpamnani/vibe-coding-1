@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { ResultCard, SearchResult } from './result-card';
-import { searchWithGemini } from '@/lib/gemini-service';
+import { searchWithSerper } from '@/lib/serper-service';
 
 interface ResultsListProps {
   query: string;
+  type?: string;
+  difficulty?: string;
 }
 
-export function ResultsList({ query }: ResultsListProps) {
+export function ResultsList({ query, type = 'all', difficulty = 'all' }: ResultsListProps) {
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<SearchResult[]>([]);
 
@@ -17,8 +19,12 @@ export function ResultsList({ query }: ResultsListProps) {
       setLoading(true);
       
       try {
-        // Use the Gemini API service to get search results
-        const searchResults = await searchWithGemini(query);
+        // Use the Serper API service to get search results with type and difficulty
+        const searchResults = await searchWithSerper(
+          query,
+          type !== 'all' ? type : undefined,
+          difficulty !== 'all' ? difficulty : undefined
+        );
         setResults(searchResults);
       } catch (error) {
         console.error('Error fetching search results:', error);
@@ -31,7 +37,7 @@ export function ResultsList({ query }: ResultsListProps) {
     if (query) {
       fetchResults();
     }
-  }, [query]);
+  }, [query, type, difficulty]);
   
   if (!query) {
     return null;

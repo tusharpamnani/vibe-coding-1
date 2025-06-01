@@ -7,10 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { searchWithGemini, GeminiSearchResult } from '@/lib/gemini-service';
-
-// Use the GeminiSearchResult interface from our service
-type SearchResult = GeminiSearchResult;
+import { searchWithSerper } from '@/lib/serper-service';
+import { SearchResult } from '@/components/search/result-card';
 
 const contentTypes = [
   { value: 'all', label: 'All' },
@@ -24,48 +22,56 @@ const contentTypes = [
 interface SearchResultsProps {
   query: string;
   selectedType: string;
+  selectedDifficulty: string;
 }
 
-export function SearchResults({ query, selectedType }: SearchResultsProps) {
+export function SearchResults({ query, selectedType, selectedDifficulty }: SearchResultsProps) {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [activeType, setActiveType] = useState(selectedType || 'all');
+  const [activeDifficulty, setActiveDifficulty] = useState(selectedDifficulty || 'all');
   const router = useRouter();
 
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
-      
+
       try {
-        // Use the Gemini API service to get search results
-        const searchResults = await searchWithGemini(query);
+        // Pass the activeType and activeDifficulty to the searchWithSerper function
+        const searchResults = await searchWithSerper(
+          query,
+          activeType !== 'all' ? activeType : undefined,
+          activeDifficulty !== 'all' ? activeDifficulty : undefined
+        );
         setResults(searchResults);
       } catch (error) {
         console.error('Error fetching search results:', error);
-        // If there's an error, the service will return mock data
       } finally {
         setLoading(false);
       }
     };
-    
-    if (query) {
-      fetchResults();
-    }
-  }, [query]);
+
+    if (query) fetchResults();
+  }, [query, activeType, activeDifficulty]);
 
   const handleTypeChange = (value: string) => {
     setActiveType(value);
-    router.push(`/search?q=${query}&type=${value}`);
+    router.push(`/search?q=${query}&type=${value}&difficulty=${activeDifficulty}`);
+  };
+
+  const handleDifficultyChange = (value: string) => {
+    setActiveDifficulty(value);
+    router.push(`/search?q=${query}&type=${activeType}&difficulty=${value}`);
   };
 
   if (!query) return null;
 
-  const filteredResults = activeType === 'all' 
-    ? results 
+  const filteredResults = activeType === 'all'
+    ? results
     : results.filter(result => {
         if (activeType === 'video') return result.type === 'video';
         if (activeType === 'image') return result.type === 'image';
-        return result.fileType?.toLowerCase() === activeType;
+        return result.type?.toLowerCase() === activeType;
       });
 
   return (
@@ -74,18 +80,30 @@ export function SearchResults({ query, selectedType }: SearchResultsProps) {
         <h2 className="text-2xl font-semibold">
           {loading ? 'Searching...' : `Results for "${query}"`}
         </h2>
-        
-        <Tabs value={activeType} onValueChange={handleTypeChange}>
-          <TabsList>
-            {contentTypes.map(type => (
-              <TabsTrigger key={type.value} value={type.value}>
-                {type.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+
+        <div className="flex gap-4">
+          <Tabs value={activeType} onValueChange={handleTypeChange}>
+            <TabsList>
+              {contentTypes.map(type => (
+                <TabsTrigger key={type.value} value={type.value}>
+                  {type.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+
+          <Tabs value={activeDifficulty} onValueChange={handleDifficultyChange}>
+            <TabsList>
+              {['all', 'basic', 'intermediate', 'advanced'].map(level => (
+                <TabsTrigger key={level} value={level}>
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
-      
+
       {loading ? (
         <div className="grid gap-4">
           {[...Array(4)].map((_, i) => (
@@ -100,25 +118,49 @@ export function SearchResults({ query, selectedType }: SearchResultsProps) {
                 <div className="space-y-3">
                   <h3 className="font-semibold text-lg">{result.title}</h3>
                   <p className="text-muted-foreground">{result.summary}</p>
-                  
+
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary">{result.source}</Badge>
                     <Badge variant="outline">{result.type}</Badge>
+                    {result.year && <Badge variant="outline">{result.year}</Badge>}
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col gap-2">
-                  <Button asChild variant="outline">
-                    <a href={result.url} target="_blank" rel="noopener noreferrer">
-                      View Source
-                    </a>
-                  </Button>
-                  
-                  {result.downloadUrl && (
-                    <Button asChild>
-                      <a href={result.downloadUrl} download>
-                        <Download className="h-4 w-4 mr-2" />
-                        Download {result.fileType}
+                  {result.type === 'youtube' ? (
+                    <Button asChild variant="outline" className="bg-red-50 hover:bg-red-100 border-red-200">
+                      <a href={result.url} target="_blank" rel="noopener noreferrer">
+                        Watch Video
+                      </a>
+                    </Button>
+                  ) : result.type === 'pdf' ? (
+                    <Button asChild variant="outline" className="bg-orange-50 hover:bg-orange-100 border-orange-200">
+                      <a href={result.url} target="_blank" rel="noopener noreferrer">
+                        View PDF
+                      </a>
+                    </Button>
+                  ) : result.type === 'ppt' ? (
+                    <Button asChild variant="outline" className="bg-blue-50 hover:bg-blue-100 border-blue-200">
+                      <a href={result.url} target="_blank" rel="noopener noreferrer">
+                        View Presentation
+                      </a>
+                    </Button>
+                  ) : result.type === 'docx' ? (
+                    <Button asChild variant="outline" className="bg-blue-50 hover:bg-blue-100 border-blue-200">
+                      <a href={result.url} target="_blank" rel="noopener noreferrer">
+                        View Document
+                      </a>
+                    </Button>
+                  ) : result.type === 'image' ? (
+                    <Button asChild variant="outline" className="bg-purple-50 hover:bg-purple-100 border-purple-200">
+                      <a href={result.url} target="_blank" rel="noopener noreferrer">
+                        View Image
+                      </a>
+                    </Button>
+                  ) : (
+                    <Button asChild variant="outline">
+                      <a href={result.url} target="_blank" rel="noopener noreferrer">
+                        View Source
                       </a>
                     </Button>
                   )}

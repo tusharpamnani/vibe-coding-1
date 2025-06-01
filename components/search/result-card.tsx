@@ -44,11 +44,43 @@ export function ResultCard({ result }: ResultCardProps) {
         <div>
           {result.type && <Badge variant="outline">{result.type}</Badge>}
         </div>
-        <Button variant="outline" size="sm" className="gap-1.5" asChild>
-          <a href={result.url} target="_blank" rel="noopener noreferrer">
-            View <ExternalLink className="h-3.5 w-3.5" />
-          </a>
-        </Button>
+        {result.type === 'youtube' ? (
+          <Button variant="outline" size="sm" className="gap-1.5 bg-red-50 hover:bg-red-100 border-red-200" asChild>
+            <a href={result.url} target="_blank" rel="noopener noreferrer">
+              Watch <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </Button>
+        ) : result.type === 'pdf' ? (
+          <Button variant="outline" size="sm" className="gap-1.5 bg-orange-50 hover:bg-orange-100 border-orange-200" asChild>
+            <a href={result.url} target="_blank" rel="noopener noreferrer">
+              PDF <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </Button>
+        ) : result.type === 'ppt' ? (
+          <Button variant="outline" size="sm" className="gap-1.5 bg-blue-50 hover:bg-blue-100 border-blue-200" asChild>
+            <a href={result.url} target="_blank" rel="noopener noreferrer">
+              Slides <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </Button>
+        ) : result.type === 'docx' ? (
+          <Button variant="outline" size="sm" className="gap-1.5 bg-blue-50 hover:bg-blue-100 border-blue-200" asChild>
+            <a href={result.url} target="_blank" rel="noopener noreferrer">
+              Doc <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </Button>
+        ) : result.type === 'image' ? (
+          <Button variant="outline" size="sm" className="gap-1.5 bg-purple-50 hover:bg-purple-100 border-purple-200" asChild>
+            <a href={result.url} target="_blank" rel="noopener noreferrer">
+              Image <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" className="gap-1.5" asChild>
+            <a href={result.url} target="_blank" rel="noopener noreferrer">
+              View <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
