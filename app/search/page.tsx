@@ -1,5 +1,6 @@
 import { SearchResults } from '@/components/search/search-results';
 import { StickySearchBar } from '@/components/search/sticky-search-bar';
+export const dynamic = 'force-dynamic';
 
 export default function SearchPage({
   searchParams
