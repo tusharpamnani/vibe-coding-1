@@ -111,7 +111,7 @@ export function SearchResults({ query, selectedType, selectedDifficulty }: Searc
           ))}
         </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-4 grid-cols-2">
           {filteredResults.map(result => (
             <Card key={result.id} className="p-6">
               <div className="flex justify-between items-start gap-4">

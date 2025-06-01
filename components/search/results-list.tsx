@@ -50,18 +50,18 @@ export function ResultsList({ query, type = 'all', difficulty = 'all' }: Results
       </h2>
       
       {loading ? (
-        <div className="grid grid-cols-1 gap-4 mt-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-[200px] rounded-lg bg-muted animate-pulse" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          {results.map(result => (
-            <ResultCard key={result.id} result={result} />
-          ))}
-        </div>
-      )}
+  <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 mt-4">
+    {[...Array(4)].map((_, i) => (
+      <div key={i} className="h-[200px] rounded-lg bg-muted animate-pulse" />
+    ))}
+  </div>
+) : (
+  <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 mt-4">
+    {results.map(result => (
+      <ResultCard key={result.id} result={result} />
+    ))}
+  </div>
+)}
     </div>
   );
 }
