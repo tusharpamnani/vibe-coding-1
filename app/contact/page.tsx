@@ -20,7 +20,7 @@ export default function ContactPage() {
             For general inquiries and support
           </p>
           <Link href="mailto:support@scholarsearch.example" className="text-primary hover:underline">
-            support@scholarsearch.example
+            support@vibecoders.dev
           </Link>
         </div>
         
@@ -31,7 +31,7 @@ export default function ContactPage() {
             Available Monday to Friday, 9am - 5pm EST
           </p>
           <Link href="tel:+1-555-123-4567" className="text-primary hover:underline">
-            +1 (555) 123-4567
+            +91 11223 44556
           </Link>
         </div>
         
@@ -42,9 +42,9 @@ export default function ContactPage() {
             Our headquarters
           </p>
           <address className="not-italic text-center">
-            123 Research Avenue<br />
-            Cambridge, MA 02139<br />
-            United States
+            Ofis India,
+            Trimurtee Nagar
+            Nagpur
           </address>
         </div>
       </div>

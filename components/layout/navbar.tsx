@@ -38,9 +38,6 @@ export function Navbar() {
         </div>
         
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/billing">Upgrade</Link>
-          </Button>
           <ModeToggle />
         </div>
       </div>
