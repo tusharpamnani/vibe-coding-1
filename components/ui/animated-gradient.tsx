@@ -32,7 +32,14 @@ export function AnimatedGradient({ className = '' }: AnimatedGradientProps) {
       [255, 204, 112] // orange/yellow
     ];
     
-    const points = [];
+    const points: {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+      color: number[];
+    }[] = [];
     const particleCount = 12;
     
     // Create initial points
@@ -49,7 +56,7 @@ export function AnimatedGradient({ className = '' }: AnimatedGradientProps) {
     
     function drawGradient() {
       // Clear canvas
-      ctx.clearRect(0, 0, width, height);
+      ctx?.clearRect(0, 0, width, height);
       
       // Move points
       points.forEach(point => {
@@ -62,7 +69,7 @@ export function AnimatedGradient({ className = '' }: AnimatedGradientProps) {
       });
       
       // Create gradient
-      const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width * 0.5);
+      const gradient = ctx?.createRadialGradient(width/2, height/2, 0, width/2, height/2, width * 0.5) ?? ctx!.createRadialGradient(width/2, height/2, 0, width/2, height/2, width * 0.5);
       
       // Create color stops from points
       points.forEach((point, i) => {
@@ -72,8 +79,8 @@ export function AnimatedGradient({ className = '' }: AnimatedGradientProps) {
       });
       
       // Apply gradient
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
+      if (ctx) ctx.fillStyle = gradient;
+      if (ctx) ctx.fillRect(0, 0, width, height);
       
       requestAnimationFrame(drawGradient);
     }
